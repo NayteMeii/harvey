@@ -1,8 +1,9 @@
-'use client';
+import { sanityFetch } from '@/sanity/lib/live'
+import { urlFor } from '@/sanity/lib/image'
+import { MobileNav } from './_components/MobileNav'
+import type { SanityImageSource } from '@sanity/image-url'
 
-import { useState } from 'react';
-
-const NAV_LINKS = ['About', 'Services', 'Projects', 'News', 'Contact'];
+const NAV_LINKS = ['About', 'Services', 'Projects', 'News', 'Contact']
 
 const SERVICES = [
   {
@@ -33,7 +34,7 @@ const SERVICES = [
       'Placeholder description of this service. Explain the value you provide and the outcomes clients can expect. Keep it to two or three sentences.',
     image: 'https://www.figma.com/api/mcp/asset/45eb3295-a439-4150-b936-b68c5ae8c8d2',
   },
-];
+]
 
 const NEWS_ITEMS = [
   {
@@ -48,7 +49,7 @@ const NEWS_ITEMS = [
     image: 'https://www.figma.com/api/mcp/asset/908ef34f-64db-41d0-8a9e-68b29d32d913',
     text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
   },
-];
+]
 
 const TESTIMONIALS = [
   {
@@ -79,68 +80,24 @@ const TESTIMONIALS = [
     rotate: '-4.15deg',
     pos: { left: '987px', top: '546px' },
   },
-];
+]
 
-const PROJECTS = [
-  {
-    title: 'Surfers paradise',
-    image: 'https://www.figma.com/api/mcp/asset/5b74333f-b1d2-427d-8dc1-c34dcd926126',
-    tags: ['Social Media', 'Photography'],
-  },
-  {
-    title: 'Cyberpunk caffe',
-    image: 'https://www.figma.com/api/mcp/asset/5f978ceb-d5e2-4830-930c-44021311dfb3',
-    tags: ['Social Media', 'Photography'],
-  },
-  {
-    title: 'Agency 976',
-    image: 'https://www.figma.com/api/mcp/asset/bb88cdfe-5900-4d25-bd7a-2b5094f8a63d',
-    tags: ['Social Media', 'Photography'],
-  },
-  {
-    title: 'Minimal Playground',
-    image: 'https://www.figma.com/api/mcp/asset/4dfc525f-8eed-40ee-aead-c56bbb9e6576',
-    tags: ['Social Media', 'Photography'],
-  },
-];
+type PortfolioDoc = {
+  _id: string
+  title: string
+  image: SanityImageSource | null
+  tags: string[] | null
+}
 
-export default function Home() {
-  const [menuOpen, setMenuOpen] = useState(false);
+const PORTFOLIO_QUERY = `*[_type == "portfolio"] | order(order asc) { _id, title, image, tags }`
+
+export default async function Home() {
+  const { data } = await sanityFetch({ query: PORTFOLIO_QUERY })
+  const projects = (data ?? []) as PortfolioDoc[]
 
   return (
     <>
     <main className="bg-[#fafafa] flex-1">
-
-      {/* ── Mobile fullscreen menu ── */}
-      <div
-        className={`fixed inset-0 z-50 bg-[#fafafa] flex flex-col px-6 py-6 md:hidden transition-opacity duration-300 ${
-          menuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-        }`}
-      >
-        <div className="flex items-center justify-between">
-          <span className="text-[16px] font-semibold tracking-[-0.64px] text-black">H.Studio</span>
-          <button onClick={() => setMenuOpen(false)} aria-label="Close menu">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M6 6L18 18M6 18L18 6" stroke="black" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-          </button>
-        </div>
-        <nav className="flex flex-col mt-12 border-t border-[#e5e5e5]">
-          {NAV_LINKS.map((item) => (
-            <a
-              key={item}
-              href={`#${item.toLowerCase()}`}
-              onClick={() => setMenuOpen(false)}
-              className="text-[38px] font-light capitalize tracking-[-1.5px] text-black border-b border-[#e5e5e5] py-4"
-            >
-              {item}
-            </a>
-          ))}
-        </nav>
-        <button className="mt-auto self-start rounded-full bg-black px-6 py-3 text-[14px] font-medium tracking-[-0.56px] text-white">
-          Let&apos;s talk
-        </button>
-      </div>
 
       {/* ── Hero section ── */}
       <section
@@ -174,16 +131,8 @@ export default function Home() {
         <nav className="relative flex w-full items-center justify-between py-6">
           <span className="text-[16px] font-semibold tracking-[-0.64px] text-black">H.Studio</span>
 
-          {/* Mobile: hamburger */}
-          <button
-            className="md:hidden"
-            onClick={() => setMenuOpen(true)}
-            aria-label="Open menu"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M3 6H21M3 12H21M3 18H21" stroke="black" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-          </button>
+          {/* Mobile: hamburger + overlay (client component) */}
+          <MobileNav />
 
           {/* Desktop: nav links + CTA */}
           <ul className="hidden md:flex gap-14 text-[16px] font-semibold tracking-[-0.64px] text-black capitalize">
@@ -527,21 +476,55 @@ export default function Home() {
         <div className="hidden md:flex gap-6 items-end">
           {/* Left column — stretches full height with justify-between */}
           <div className="flex-1 self-stretch flex flex-col justify-between gap-10">
-            <ProjectCard title={PROJECTS[0].title} image={PROJECTS[0].image} tags={PROJECTS[0].tags} height={744} />
-            <ProjectCard title={PROJECTS[1].title} image={PROJECTS[1].image} tags={PROJECTS[1].tags} height={699} />
+            {projects[0] && (
+              <ProjectCard
+                title={projects[0].title}
+                imageUrl={projects[0].image ? urlFor(projects[0].image).width(800).url() : null}
+                tags={projects[0].tags ?? []}
+                height={744}
+              />
+            )}
+            {projects[1] && (
+              <ProjectCard
+                title={projects[1].title}
+                imageUrl={projects[1].image ? urlFor(projects[1].image).width(800).url() : null}
+                tags={projects[1].tags ?? []}
+                height={699}
+              />
+            )}
             <PortfolioCTA />
           </div>
           {/* Right column — offset 240px from top */}
           <div className="flex-1 flex flex-col gap-[117px] pt-[240px]">
-            <ProjectCard title={PROJECTS[2].title} image={PROJECTS[2].image} tags={PROJECTS[2].tags} height={699} />
-            <ProjectCard title={PROJECTS[3].title} image={PROJECTS[3].image} tags={PROJECTS[3].tags} height={744} />
+            {projects[2] && (
+              <ProjectCard
+                title={projects[2].title}
+                imageUrl={projects[2].image ? urlFor(projects[2].image).width(800).url() : null}
+                tags={projects[2].tags ?? []}
+                height={699}
+              />
+            )}
+            {projects[3] && (
+              <ProjectCard
+                title={projects[3].title}
+                imageUrl={projects[3].image ? urlFor(projects[3].image).width(800).url() : null}
+                tags={projects[3].tags ?? []}
+                height={744}
+              />
+            )}
           </div>
         </div>
 
         {/* Mobile: single column */}
         <div className="md:hidden flex flex-col gap-6">
-          {PROJECTS.map((p) => (
-            <ProjectCard key={p.title} title={p.title} image={p.image} tags={p.tags} height={390} />
+          {projects.map((p: PortfolioDoc) => (
+            <ProjectCard
+              key={p._id}
+              title={p.title}
+              imageUrl={p.image ? urlFor(p.image).width(600).url() : null}
+              tags={p.tags ?? []}
+              height={390}
+            />
           ))}
           <PortfolioCTA />
         </div>
@@ -695,10 +678,10 @@ export default function Home() {
                       </svg>
                     </div>
                   </div>
-                );
+                )
                 return i === 0
                   ? [card]
-                  : [<div key={`d${i}`} className="self-stretch w-px bg-black/20 mx-10 shrink-0" />, card];
+                  : [<div key={`d${i}`} className="self-stretch w-px bg-black/20 mx-10 shrink-0" />, card]
               })}
             </div>
           </div>
@@ -811,7 +794,7 @@ export default function Home() {
 
     </footer>
     </>
-  );
+  )
 }
 
 function TestimonialCard({
@@ -820,10 +803,10 @@ function TestimonialCard({
   logo,
   className = '',
 }: {
-  name: string;
-  quote: string;
-  logo: string;
-  className?: string;
+  name: string
+  quote: string
+  logo: string
+  className?: string
 }) {
   return (
     <div className={`bg-[#f1f1f1] border border-[#ddd] flex flex-col gap-4 p-6 rounded-[4px] ${className}`}>
@@ -841,24 +824,26 @@ function TestimonialCard({
         {name}
       </p>
     </div>
-  );
+  )
 }
 
 function ProjectCard({
   title,
-  image,
+  imageUrl,
   tags,
   height,
 }: {
-  title: string;
-  image: string;
-  tags: string[];
-  height: number;
+  title: string
+  imageUrl: string | null
+  tags: string[]
+  height: number
 }) {
   return (
     <div className="flex flex-col gap-[10px]">
-      <div className="relative w-full overflow-hidden" style={{ height }}>
-        <img src={image} alt={title} className="absolute inset-0 w-full h-full object-cover" />
+      <div className="relative w-full overflow-hidden bg-[#1f1f1f]" style={{ height }}>
+        {imageUrl && (
+          <img src={imageUrl} alt={title} className="absolute inset-0 w-full h-full object-cover" />
+        )}
         <div className="absolute bottom-4 left-4 flex gap-3">
           {tags.map((tag) => (
             <span
@@ -879,7 +864,7 @@ function ProjectCard({
         </svg>
       </div>
     </div>
-  );
+  )
 }
 
 function PortfolioCTA() {
@@ -894,12 +879,12 @@ function PortfolioCTA() {
         </button>
       </div>
     </QuoteBrackets>
-  );
+  )
 }
 
 /* Corner-bracket quote decoration */
 function QuoteBrackets({ children }: { children: React.ReactNode }) {
-  const corner = "w-4 h-4 shrink-0";
+  const corner = "w-4 h-4 shrink-0"
   return (
     <div className="flex items-stretch gap-3">
       {/* Left brackets */}
@@ -915,5 +900,5 @@ function QuoteBrackets({ children }: { children: React.ReactNode }) {
         <div className={`${corner} border-b border-r border-[#1f1f1f]`} />
       </div>
     </div>
-  );
+  )
 }
