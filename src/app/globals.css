@@ -17,3 +17,14 @@ body {
   color: var(--foreground);
   font-family: var(--font-inter), Arial, Helvetica, sans-serif;
 }
+
+.hero-bg-photo {
+  object-position: center 10%;
+  transform: translateY(132px) scale(1.25);
+}
+
+@media (min-width: 768px) {
+  .hero-bg-photo {
+    transform: translate(90px, 132px) scale(1.25);
+  }
+}

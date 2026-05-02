@@ -112,8 +112,8 @@ export default async function Home() {
         <img
           src="/hero-bg.jpg"
           alt=""
-          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-          style={{ zIndex: -1, objectPosition: 'center 10%', transform: 'translateY(78px) scale(1.25)' }}
+          className="hero-bg-photo absolute inset-0 w-full h-full object-cover pointer-events-none"
+          style={{ zIndex: -1 }}
         />
 
         {/* Bottom blur with gradient fade — no hard cut-off */}
