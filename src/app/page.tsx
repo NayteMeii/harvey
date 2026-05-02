@@ -105,7 +105,7 @@ export default async function Home() {
           min-h-screen md:h-[847px]
           px-4 md:px-8
           pb-6 md:pb-0
-          justify-between md:justify-start md:gap-[240px]"
+          justify-between md:justify-start md:gap-[145px]"
         style={{ isolation: 'isolate' }}
       >
         {/* Background photo — always fills the section */}
@@ -113,7 +113,7 @@ export default async function Home() {
           src="/hero-bg.jpg"
           alt=""
           className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-          style={{ zIndex: -1, objectPosition: 'center 10%' }}
+          style={{ zIndex: -1, objectPosition: 'center 10%', transform: 'translateY(78px) scale(1.25)' }}
         />
 
         {/* Bottom blur with gradient fade — no hard cut-off */}
