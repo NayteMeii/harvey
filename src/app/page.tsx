@@ -1,9 +1,10 @@
 import { sanityFetch } from '@/sanity/lib/live'
 import { urlFor } from '@/sanity/lib/image'
-import { MobileNav } from './_components/MobileNav'
+import { AnimatedButton } from './_components/AnimatedButton'
+import { HeaderNav } from './_components/HeaderNav'
+import { MobileNewsSlider } from './_components/MobileNewsSlider'
+import { MobileTestimonials } from './_components/MobileTestimonials'
 import type { SanityImageSource } from '@sanity/image-url'
-
-const NAV_LINKS = ['About', 'Services', 'Projects', 'News', 'Contact']
 
 const SERVICES = [
   {
@@ -109,12 +110,13 @@ export default async function Home() {
         style={{ isolation: 'isolate' }}
       >
         {/* Background photo — always fills the section */}
-        <img
-          src="/hero-bg.jpg"
-          alt=""
-          className="hero-bg-photo absolute inset-0 w-full h-full object-cover pointer-events-none"
-          style={{ zIndex: -1 }}
-        />
+        <picture className="absolute inset-0 pointer-events-none" style={{ zIndex: -1 }}>
+          <img
+            src="/hero-bg.jpg"
+            alt=""
+            className="hero-bg-photo absolute inset-0 h-full w-full object-cover"
+          />
+        </picture>
 
         {/* Bottom blur with gradient fade — no hard cut-off */}
         <div
@@ -128,24 +130,7 @@ export default async function Home() {
         />
 
         {/* ── Navbar ── */}
-        <nav className="relative flex w-full items-center justify-between py-6">
-          <span className="text-[16px] font-semibold tracking-[-0.64px] text-black">H.Studio</span>
-
-          {/* Mobile: hamburger + overlay (client component) */}
-          <MobileNav />
-
-          {/* Desktop: nav links + CTA */}
-          <ul className="hidden md:flex gap-14 text-[16px] font-semibold tracking-[-0.64px] text-black capitalize">
-            {NAV_LINKS.map((item) => (
-              <li key={item} className="cursor-pointer transition-opacity hover:opacity-60">
-                {item}
-              </li>
-            ))}
-          </ul>
-          <button className="hidden md:flex rounded-full bg-black px-4 py-3 text-[14px] font-medium tracking-[-0.56px] text-white transition-opacity hover:opacity-80">
-            Let&apos;s talk
-          </button>
-        </nav>
+        <HeaderNav />
 
         {/* ── Hero text ── */}
         {/*
@@ -164,21 +149,12 @@ export default async function Home() {
                 [ Hello i&apos;m ]
               </p>
             </div>
-            {/*
-              clamp(96px, calc(60px + 9.6vw), 198px):
-                375px → 96px  (mobile, wraps to 2 lines)
-                1440px → 198px (desktop, single line)
-              letter-spacing: -0.07em scales proportionally with font-size.
-            */}
             <h1
               className="w-full text-center font-medium capitalize text-white mix-blend-overlay
-                leading-[0.85] md:leading-[1.1] md:mb-[-15px]"
-              style={{
-                fontSize: 'clamp(96px, calc(60px + 9.6vw), 198px)',
-                letterSpacing: '-0.07em',
-              }}
+                text-[clamp(86px,24vw,112px)] md:text-[clamp(92px,13vw,118px)] lg:text-[clamp(124px,12vw,198px)]
+                tracking-[-0.07em] leading-[0.85] md:leading-[1.1] md:mb-[-15px]"
             >
-              Harvey<br className="md:hidden" /><span className="hidden md:inline">&nbsp;&nbsp;&nbsp;</span>Specter
+              Harvey<br className="lg:hidden" /><span className="hidden lg:inline">&nbsp;&nbsp;&nbsp;</span>Specter
             </h1>
           </div>
 
@@ -197,9 +173,9 @@ export default async function Home() {
                 {' '}design and art group specializing in branding, web design
                 and engineering.
               </p>
-              <button className="rounded-full bg-black px-4 py-3 text-[14px] font-medium tracking-[-0.56px] text-white transition-opacity hover:opacity-80">
+              <AnimatedButton className="rounded-full bg-black px-4 py-3 text-[14px] font-medium tracking-[-0.56px] text-white">
                 Let&apos;s talk
-              </button>
+              </AnimatedButton>
             </div>
           </div>
         </div>
@@ -219,7 +195,7 @@ export default async function Home() {
           </div>
 
           {/* Staggered lines */}
-          <div className="flex flex-col gap-0 uppercase">
+          <div className="bio-lines flex flex-col gap-0 uppercase">
 
             {/* Line 1 — 001 label + A creative director / */}
             <div className="text-center md:text-left md:pl-0">
@@ -228,10 +204,7 @@ export default async function Home() {
                 001
               </p>
               <div className="flex items-start justify-center md:justify-start gap-3">
-                <span
-                  className="font-light text-[32px] md:text-[96px] leading-[0.84] text-black whitespace-nowrap"
-                  style={{ letterSpacing: "-0.08em" }}
-                >
+                <span className="bio-line font-light leading-[0.84] text-black whitespace-nowrap">
                   A creative director&nbsp;&nbsp;&nbsp;/
                 </span>
                 {/* 001 sits inline on desktop */}
@@ -242,21 +215,15 @@ export default async function Home() {
             </div>
 
             {/* Line 2 — Photographer */}
-            <div className="text-center md:text-left md:pl-[214px]">
-              <span
-                className="font-light text-[32px] md:text-[96px] leading-[0.84] text-black whitespace-nowrap"
-                style={{ letterSpacing: "-0.08em" }}
-              >
+            <div className="bio-line-offset-1 text-center md:text-left">
+              <span className="bio-line font-light leading-[0.84] text-black whitespace-nowrap">
                 Photographer
               </span>
             </div>
 
             {/* Line 3 — Born & raised (& in Playfair italic) */}
-            <div className="text-center md:text-left md:pl-[610px]">
-              <span
-                className="font-light text-[32px] md:text-[96px] leading-[0.84] text-black whitespace-nowrap"
-                style={{ letterSpacing: "-0.08em" }}
-              >
+            <div className="bio-line-offset-2 text-center md:text-left">
+              <span className="bio-line font-light leading-[0.84] text-black whitespace-nowrap">
                 Born{" "}
                 <span
                   style={{
@@ -274,22 +241,16 @@ export default async function Home() {
 
             {/* Line 4 — on the south side */}
             <div className="text-center md:text-left md:pl-0">
-              <span
-                className="font-light text-[32px] md:text-[96px] leading-[0.84] text-black whitespace-nowrap"
-                style={{ letterSpacing: "-0.08em" }}
-              >
+              <span className="bio-line font-light leading-[0.84] text-black whitespace-nowrap">
                 on the south side
               </span>
             </div>
 
             {/* Line 5 — of chicago. + [ creative freelancer ] */}
-            <div className="text-center md:text-left md:pl-[606px]">
+            <div className="bio-line-offset-2 text-center md:text-left">
               {/* Desktop: label inline after text */}
               <div className="hidden md:flex items-start gap-6">
-                <span
-                  className="font-light text-[96px] leading-[0.84] text-black whitespace-nowrap"
-                  style={{ letterSpacing: "-0.08em" }}
-                >
+                <span className="bio-line font-light leading-[0.84] text-black whitespace-nowrap">
                   of chicago.
                 </span>
                 <span className="font-mono text-[14px] text-[#1f1f1f] leading-[1.1] whitespace-nowrap mt-[26px] shrink-0">
@@ -317,8 +278,8 @@ export default async function Home() {
       {/* ── About section ── */}
       <section className="px-4 md:px-8 py-12 md:py-20 overflow-hidden">
 
-        {/* Mobile layout — stacked */}
-        <div className="flex flex-col gap-6 md:hidden">
+        {/* Mobile/tablet layout — stacked */}
+        <div className="flex flex-col gap-6 xl:hidden">
           <div className="flex flex-col gap-1">
             <span className="font-mono text-[14px] text-[#1f1f1f] uppercase leading-[1.1]">002</span>
             <span className="font-mono text-[14px] text-[#1f1f1f] uppercase leading-[1.1]">[ About ]</span>
@@ -340,18 +301,18 @@ export default async function Home() {
         </div>
 
         {/* Desktop layout — two columns */}
-        <div className="hidden md:flex w-full h-[614px]">
+        <div className="hidden xl:grid xl:grid-cols-[393px_minmax(0,1fr)] w-full min-h-[614px] gap-8">
 
           {/* Left: [ About ] label */}
-          <div className="w-[393px] shrink-0 pt-0">
+          <div className="pt-0">
             <span className="font-mono text-[14px] text-[#1f1f1f] uppercase leading-[1.1]">[ About ]</span>
           </div>
 
           {/* Right: quote (bottom) + photo (right) */}
-          <div className="flex flex-1 items-end gap-8">
+          <div className="grid min-w-0 grid-cols-[minmax(260px,465px)_minmax(280px,436px)] items-end gap-8 lg:flex lg:flex-1">
 
             {/* Quote block at bottom-left of content area */}
-            <div className="flex-1 max-w-[465px] self-end">
+            <div className="min-w-0 self-end lg:flex-1 lg:max-w-[465px]">
               <QuoteBrackets>
                 <p className="text-[14px] font-normal leading-[1.3] text-[#1f1f1f] py-3" style={{ letterSpacing: "-0.56px" }}>
                   Placeholder paragraph one. This is where you introduce yourself — your background,
@@ -364,9 +325,9 @@ export default async function Home() {
             </div>
 
             {/* Portrait photo */}
-            <div className="flex items-start gap-6 h-full shrink-0">
+            <div className="flex items-start gap-6 h-full min-w-0 lg:shrink-0">
               <span className="font-mono text-[14px] text-[#1f1f1f] leading-[1.1] shrink-0">002</span>
-              <div className="h-full w-[436px] rounded-[8px] overflow-hidden">
+              <div className="h-full w-full lg:w-[436px] rounded-[8px] overflow-hidden">
                 <img src="/about-portrait.jpg" alt="Harvey Specter" className="w-full h-full object-cover" />
               </div>
             </div>
@@ -535,7 +496,7 @@ export default async function Home() {
       <section className="overflow-hidden" id="testimonials">
 
         {/* Desktop: floating scattered cards + big heading */}
-        <div className="hidden md:flex relative flex-col items-center justify-center min-h-[987px] py-[120px]">
+        <div className="hidden md:flex relative flex-col items-center justify-center min-h-[987px] py-[120px] origin-top scale-[0.78] lg:scale-[0.88] xl:scale-100">
           {TESTIMONIALS.map((t) => (
             <div
               key={t.name}
@@ -555,82 +516,20 @@ export default async function Home() {
           {/* z-10 — above Lukas (z-5) but below Marko/Sarah/Sofia (z-20) */}
           <p
             className="relative z-10 font-medium text-black text-center capitalize leading-[1.1]"
-            style={{ fontSize: '198px', letterSpacing: '-13.86px' }}
+            style={{ fontSize: 'clamp(122px, 13.7vw, 198px)', letterSpacing: 'clamp(-8.54px, -0.95vw, -13.86px)' }}
           >
             Testimonials
           </p>
         </div>
 
-        {/* Mobile: heading + horizontal-scroll card fan */}
-        <div className="md:hidden py-16 overflow-hidden">
-          <p
-            className="px-4 font-medium text-black capitalize leading-[0.8] mb-8"
-            style={{ fontSize: '64px', letterSpacing: '-4.48px' }}
-          >
-            Testimonials
-          </p>
-          <div
-            className="flex items-center overflow-x-auto pl-4"
-            style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}
-          >
-            {TESTIMONIALS.map((t, i) => (
-              <div
-                key={t.name}
-                className="shrink-0"
-                style={{
-                  marginRight: i < TESTIMONIALS.length - 1 ? '-12px' : '16px',
-                  zIndex: TESTIMONIALS.length - i,
-                  position: 'relative',
-                }}
-              >
-                <div style={{ transform: `rotate(${i % 2 === 0 ? '-3.5deg' : '2deg'})` }}>
-                  <TestimonialCard name={t.name} quote={t.quote} logo={t.logo} className="w-[260px]" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <MobileTestimonials items={TESTIMONIALS} />
 
       </section>
 
       {/* ── News & Achievements section ── */}
       <section className="bg-[#f3f3f3] py-16 md:py-[120px]" id="news">
 
-        {/* Mobile: title + snap-scroll slider */}
-        <div className="md:hidden flex flex-col gap-8 px-4">
-          <h2
-            className="font-light uppercase text-black"
-            style={{ fontSize: '32px', letterSpacing: '-2.56px', lineHeight: '0.86' }}
-          >
-            Keep up with my latest news &amp; achievements
-          </h2>
-          <div
-            className="-mx-4 flex gap-4 overflow-x-auto pl-4 pb-2"
-            style={{ scrollbarWidth: 'none', scrollSnapType: 'x mandatory' } as React.CSSProperties}
-          >
-            {NEWS_ITEMS.map((item, i) => (
-              <div
-                key={i}
-                className="shrink-0 flex flex-col gap-4"
-                style={{ width: '300px', scrollSnapAlign: 'start' }}
-              >
-                <div className="overflow-hidden" style={{ height: '398px' }}>
-                  <img src={item.image} alt="" className="w-full h-full object-cover" />
-                </div>
-                <p className="text-[#1f1f1f] text-[14px] leading-[1.3]" style={{ letterSpacing: '-0.56px' }}>
-                  {item.text}
-                </p>
-                <div className="flex items-center gap-[10px] border-b border-black pb-1 w-fit">
-                  <span className="font-medium text-[14px] text-black" style={{ letterSpacing: '-0.56px' }}>Read more</span>
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                    <path d="M4 14L14 4M14 4H7M14 4V11" stroke="black" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-              </div>
-            ))}
-            <div className="shrink-0 w-4" />
-          </div>
-        </div>
+        <MobileNewsSlider items={NEWS_ITEMS} />
 
         {/* Desktop: rotated title + horizontal-scroll slider */}
         <div className="hidden md:flex items-stretch overflow-hidden">
@@ -695,16 +594,16 @@ export default async function Home() {
     <footer className="bg-black pt-12 overflow-hidden">
 
       {/* Mobile footer */}
-      <div className="md:hidden flex flex-col gap-12 px-4">
+      <div className="xl:hidden flex flex-col gap-12 px-4">
         {/* Top: CTA + socials + divider */}
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-3">
             <p className="font-light italic uppercase text-white text-[24px]" style={{ letterSpacing: '-0.96px', lineHeight: '1.1' }}>
               Have a <strong className="font-black not-italic">project</strong> in mind?
             </p>
-            <button className="border border-white rounded-full px-4 py-3 text-[14px] font-medium text-white tracking-[-0.56px] w-fit transition-opacity hover:opacity-70">
+            <AnimatedButton className="w-fit rounded-full border border-white px-4 py-3 text-[14px] font-medium tracking-[-0.56px] text-white">
               Let&apos;s talk
-            </button>
+            </AnimatedButton>
           </div>
           <div className="flex flex-col gap-4">
             {['Facebook', 'Instagram', 'X.com', 'Linkedin'].map((s) => (
@@ -730,7 +629,7 @@ export default async function Home() {
       </div>
 
       {/* Desktop footer */}
-      <div className="hidden md:flex flex-col gap-[120px] px-8">
+      <div className="hidden xl:flex flex-col gap-[120px] px-8">
         {/* Top: CTA | socials center | socials right + divider */}
         <div className="flex flex-col gap-12">
           <div className="flex items-start justify-between w-full">
@@ -739,9 +638,9 @@ export default async function Home() {
               <p className="font-light italic uppercase text-white text-[24px]" style={{ letterSpacing: '-0.96px', lineHeight: '1.1' }}>
                 Have a <strong className="font-black not-italic">project</strong> in mind?
               </p>
-              <button className="border border-white rounded-full px-4 py-3 text-[14px] font-medium text-white tracking-[-0.56px] w-fit transition-opacity hover:opacity-70">
+              <AnimatedButton className="w-fit rounded-full border border-white px-4 py-3 text-[14px] font-medium tracking-[-0.56px] text-white">
                 Let&apos;s talk
-              </button>
+              </AnimatedButton>
             </div>
             {/* Center: Facebook / Instagram */}
             <div className="text-center w-[298px]">
@@ -874,9 +773,9 @@ function PortfolioCTA() {
         <p className="text-[14px] italic leading-[1.3] text-[#1f1f1f]" style={{ letterSpacing: '-0.56px' }}>
           Discover how my creativity transforms ideas into impactful digital experiences — schedule a call with me to get started.
         </p>
-        <button className="self-start rounded-full bg-black px-4 py-3 text-[14px] font-medium tracking-[-0.56px] text-white transition-opacity hover:opacity-80">
+        <AnimatedButton className="self-start rounded-full bg-black px-4 py-3 text-[14px] font-medium tracking-[-0.56px] text-white">
           Let&apos;s talk
-        </button>
+        </AnimatedButton>
       </div>
     </QuoteBrackets>
   )

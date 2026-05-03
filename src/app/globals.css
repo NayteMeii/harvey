@@ -19,12 +19,37 @@ body {
 }
 
 .hero-bg-photo {
+  top: -132px;
+  height: calc(100% + 132px);
   object-position: center 10%;
   transform: translateY(132px) scale(1.25);
+  transform-origin: top center;
+}
+
+.bio-line {
+  font-size: 32px;
+  letter-spacing: -0.08em;
+}
+
+@media (min-width: 768px) {
+  .bio-line {
+    font-size: clamp(54px, 7.4vw, 96px);
+  }
+
+  .bio-line-offset-1 {
+    padding-left: clamp(72px, 14.9vw, 214px);
+  }
+
+  .bio-line-offset-2 {
+    padding-left: clamp(180px, 42.4vw, 610px);
+  }
 }
 
 @media (min-width: 768px) {
   .hero-bg-photo {
-    transform: translate(90px, 132px) scale(1.25);
+    top: 0;
+    height: 100%;
+    object-position: calc(50% + 72px) 0;
+    transform: scale(1.08);
   }
 }
