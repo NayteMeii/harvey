@@ -20,11 +20,11 @@ export function MobileNewsSlider({ items }: { items: NewsItem[] }) {
   }
 
   return (
-    <div className="md:hidden px-4">
-      <div className="flex flex-col gap-8">
+    <div className="max-w-full overflow-hidden px-4 md:hidden">
+      <div className="flex flex-col gap-5">
         <h2
           className="font-light uppercase text-black"
-          style={{ fontSize: '34px', letterSpacing: '-2.72px', lineHeight: '0.86' }}
+          style={{ fontSize: '30px', letterSpacing: '-2.4px', lineHeight: '0.88' }}
         >
           Keep up with my
           <br />
@@ -53,11 +53,11 @@ export function MobileNewsSlider({ items }: { items: NewsItem[] }) {
             }
           }}
         >
-          <div className="flex w-full transition-transform duration-300 ease-out" style={trackStyle}>
+          <div className="flex w-full flex-nowrap transition-transform duration-300 ease-out" style={trackStyle}>
             {items.map((item, index) => (
-              <article key={index} className="min-w-full shrink-0 pr-4">
-                <div className="flex flex-col gap-4">
-                  <div className="overflow-hidden rounded-[4px]" style={{ aspectRatio: '300/398' }}>
+              <article key={index} className="w-full min-w-0 flex-[0_0_100%]">
+                <div className="flex flex-col gap-3">
+                  <div className="overflow-hidden rounded-[4px]" style={{ aspectRatio: '343/423' }}>
                     <img src={item.image} alt="" className="w-full h-full object-cover" />
                   </div>
                   <p className="text-[#1f1f1f] text-[14px] leading-[1.3]" style={{ letterSpacing: '-0.56px' }}>
@@ -77,25 +77,28 @@ export function MobileNewsSlider({ items }: { items: NewsItem[] }) {
                       />
                     </svg>
                   </div>
+                  <div className="mt-4 flex w-full justify-center gap-0.5" aria-label="Choose news item">
+                    {items.map((dotItem, dotIndex) => (
+                      <button
+                        key={dotItem.image}
+                        type="button"
+                        onClick={() => goTo(dotIndex)}
+                        aria-label={`Show news item ${dotIndex + 1}`}
+                        aria-current={activeIndex === dotIndex}
+                        className="flex h-5 w-5 items-center justify-center rounded-full"
+                      >
+                        <span
+                          className={`h-2.5 w-2.5 rounded-full transition-colors ${
+                            activeIndex === dotIndex ? 'bg-black' : 'bg-black/20'
+                          }`}
+                        />
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </article>
             ))}
           </div>
-        </div>
-
-        <div className="flex justify-center gap-2" aria-label="Choose news item">
-          {items.map((item, index) => (
-            <button
-              key={item.image}
-              type="button"
-              onClick={() => goTo(index)}
-              aria-label={`Show news item ${index + 1}`}
-              aria-current={activeIndex === index}
-              className={`h-2.5 w-2.5 rounded-full transition-colors ${
-                activeIndex === index ? 'bg-black' : 'bg-black/20'
-              }`}
-            />
-          ))}
         </div>
       </div>
     </div>

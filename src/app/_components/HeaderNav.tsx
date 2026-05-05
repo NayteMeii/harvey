@@ -8,6 +8,7 @@ const NAV_LINKS = ['About', 'Services', 'Projects', 'News', 'Contact']
 export function HeaderNav() {
   const [open, setOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [isLight, setIsLight] = useState(false)
   const rootRef = useRef<HTMLElement>(null)
   const backdropRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
@@ -85,6 +86,45 @@ export function HeaderNav() {
     }
   }, [])
 
+  useEffect(() => {
+    let frame: number | null = null
+
+    const updateNavTheme = () => {
+      frame = null
+
+      const sampleY = 34
+      const lightSections = Array.from(document.querySelectorAll<HTMLElement>('[data-nav-theme="light"]'))
+      const nextIsLight = lightSections.some((section) => {
+        const rect = section.getBoundingClientRect()
+        return rect.top <= sampleY && rect.bottom >= sampleY
+      })
+
+      setIsLight(nextIsLight)
+    }
+
+    const requestUpdate = () => {
+      if (frame !== null) return
+      frame = window.requestAnimationFrame(updateNavTheme)
+    }
+
+    updateNavTheme()
+    window.addEventListener('scroll', requestUpdate, { passive: true })
+    window.addEventListener('resize', requestUpdate)
+
+    return () => {
+      if (frame !== null) {
+        window.cancelAnimationFrame(frame)
+      }
+      window.removeEventListener('scroll', requestUpdate)
+      window.removeEventListener('resize', requestUpdate)
+    }
+  }, [])
+
+  useEffect(() => {
+    gsap.set(desktopButtonFillRef.current, { scaleX: 0 })
+    gsap.set(desktopButtonTextRef.current, { color: isLight ? '#000000' : '#ffffff' })
+  }, [isLight])
+
   const animateDesktopLink = (index: number, hovered: boolean) => {
     const link = desktopLinkRefs.current[index]
     const underline = desktopUnderlineRefs.current[index]
@@ -107,11 +147,15 @@ export function HeaderNav() {
   }
 
   const animateDesktopButton = (hovered: boolean) => {
+    const buttonColors = getDesktopButtonColors()
+
     animateCtaButton(
       desktopButtonRef.current,
       desktopButtonFillRef.current,
       desktopButtonTextRef.current,
-      hovered
+      hovered,
+      buttonColors.hoverTextColor,
+      buttonColors.idleTextColor
     )
   }
 
@@ -119,7 +163,9 @@ export function HeaderNav() {
     button: HTMLButtonElement | null,
     fill: HTMLSpanElement | null,
     text: HTMLSpanElement | null,
-    hovered: boolean
+    hovered: boolean,
+    hoverTextColor = '#000000',
+    idleTextColor = '#ffffff'
   ) => {
     if (!button || !fill || !text) return
 
@@ -138,7 +184,7 @@ export function HeaderNav() {
       transformOrigin: hovered ? 'left center' : 'right center',
     })
     gsap.to(text, {
-      color: hovered ? '#000000' : '#ffffff',
+      color: hovered ? hoverTextColor : idleTextColor,
       duration: 0.18,
       ease: 'power2.out',
     })
@@ -161,6 +207,8 @@ export function HeaderNav() {
     })
   }
 
+  const canHover = () => window.matchMedia('(hover: hover) and (pointer: fine)').matches
+
   const openMenu = () => {
     setMounted(true)
     setOpen(true)
@@ -168,17 +216,32 @@ export function HeaderNav() {
 
   const closeMenu = () => setOpen(false)
 
+  const navColorClass = isLight ? 'text-white' : 'text-black'
+  const desktopButtonClass = isLight ? 'bg-white text-black' : 'bg-black text-white'
+  const desktopButtonFillClass = isLight ? 'bg-black' : 'bg-white'
+  const getDesktopButtonColors = () => ({
+    hoverTextColor: isLight ? '#ffffff' : '#000000',
+    idleTextColor: isLight ? '#000000' : '#ffffff',
+  })
+
   return (
-    <header ref={rootRef} className="relative w-full">
+    <header
+      ref={rootRef}
+      className={`fixed inset-x-0 top-0 z-[100] px-4 transition-colors duration-300 md:px-8 ${navColorClass}`}
+    >
       <div className="relative z-20 flex w-full items-center justify-between py-6 xl:hidden">
-        <span className="text-[16px] font-semibold tracking-[-0.64px] text-black">H.Studio</span>
+        <span className="text-[16px] font-semibold tracking-[-0.64px]">H.Studio</span>
 
         <button
           ref={mobileButtonRef}
           className="relative z-30 flex h-12 w-12 items-center justify-center"
           onClick={openMenu}
-          onMouseEnter={() => animateMobileButton(true)}
-          onMouseLeave={() => animateMobileButton(false)}
+          onMouseEnter={() => {
+            if (canHover()) animateMobileButton(true)
+          }}
+          onMouseLeave={() => {
+            if (canHover()) animateMobileButton(false)
+          }}
           aria-label="Open menu"
           aria-expanded={open}
         >
@@ -186,29 +249,29 @@ export function HeaderNav() {
             ref={(node) => {
               mobileButtonLineRefs.current[0] = node
             }}
-            className="absolute h-[1.5px] w-8 bg-black"
+            className="absolute h-[1.5px] w-8 bg-current transition-colors duration-300"
             style={{ transform: 'translateY(-7px)' }}
           />
           <span
             ref={(node) => {
               mobileButtonLineRefs.current[1] = node
             }}
-            className="absolute h-[1.5px] w-8 bg-black"
+            className="absolute h-[1.5px] w-8 bg-current transition-colors duration-300"
           />
           <span
             ref={(node) => {
               mobileButtonLineRefs.current[2] = node
             }}
-            className="absolute h-[1.5px] w-8 bg-black"
+            className="absolute h-[1.5px] w-8 bg-current transition-colors duration-300"
             style={{ transform: 'translateY(7px)' }}
           />
         </button>
       </div>
 
       <div className="hidden w-full items-center justify-between py-2 xl:flex">
-        <span className="text-[16px] font-semibold tracking-[-0.64px] text-black">H.Studio</span>
+        <span className="text-[16px] font-semibold tracking-[-0.64px]">H.Studio</span>
 
-        <div className="flex items-center gap-14 text-[16px] font-semibold tracking-[-0.64px] text-black capitalize">
+        <div className="flex items-center gap-14 text-[16px] font-semibold tracking-[-0.64px] capitalize">
           {NAV_LINKS.map((item, index) => (
             <a
               key={item}
@@ -217,15 +280,19 @@ export function HeaderNav() {
                 desktopLinkRefs.current[index] = node
               }}
               className="relative inline-flex flex-col items-center pb-1 transition-transform"
-              onMouseEnter={() => animateDesktopLink(index, true)}
-              onMouseLeave={() => animateDesktopLink(index, false)}
+              onMouseEnter={() => {
+                if (canHover()) animateDesktopLink(index, true)
+              }}
+              onMouseLeave={() => {
+                if (canHover()) animateDesktopLink(index, false)
+              }}
             >
               <span>{item}</span>
               <span
                 ref={(node) => {
                   desktopUnderlineRefs.current[index] = node
                 }}
-                className="absolute -bottom-0.5 left-0 h-px w-full origin-left bg-black"
+                className="absolute -bottom-0.5 left-0 h-px w-full origin-left bg-current transition-colors duration-300"
                 style={{ transform: 'scaleX(0)' }}
               />
             </a>
@@ -234,11 +301,15 @@ export function HeaderNav() {
 
         <button
           ref={desktopButtonRef}
-          className="relative overflow-hidden rounded-full bg-black px-4 py-3 text-[14px] font-medium tracking-[-0.56px] text-white shadow-none transition-transform"
-          onMouseEnter={() => animateDesktopButton(true)}
-          onMouseLeave={() => animateDesktopButton(false)}
+          className={`relative overflow-hidden rounded-full px-4 py-3 text-[14px] font-medium tracking-[-0.56px] shadow-none transition-colors duration-300 ${desktopButtonClass}`}
+          onMouseEnter={() => {
+            if (canHover()) animateDesktopButton(true)
+          }}
+          onMouseLeave={() => {
+            if (canHover()) animateDesktopButton(false)
+          }}
         >
-          <span ref={desktopButtonFillRef} className="absolute inset-0 origin-left scale-x-0 bg-white" />
+          <span ref={desktopButtonFillRef} className={`absolute inset-0 origin-left scale-x-0 ${desktopButtonFillClass}`} />
           <span ref={desktopButtonTextRef} className="relative z-10">Let&apos;s talk</span>
         </button>
       </div>
@@ -246,10 +317,10 @@ export function HeaderNav() {
       {mounted && (
         <div
           ref={backdropRef}
-          className="fixed inset-0 z-50 xl:hidden"
+          className="fixed inset-0 z-[110] xl:hidden"
           onClick={closeMenu}
         >
-          <div ref={panelRef} className="relative z-[60] flex h-full w-full flex-col bg-[#fafafa] px-6 py-6" onClick={(event) => event.stopPropagation()}>
+          <div ref={panelRef} className="relative z-[120] flex h-full w-full flex-col bg-[#fafafa] px-6 py-6" onClick={(event) => event.stopPropagation()}>
             <div className="flex items-center justify-between">
               <span className="text-[16px] font-semibold tracking-[-0.64px] text-black">H.Studio</span>
               <button
@@ -284,22 +355,24 @@ export function HeaderNav() {
               ref={mobileMenuButtonRef}
               className="relative mt-auto self-start overflow-hidden rounded-full bg-black px-6 py-3 text-[14px] font-medium tracking-[-0.56px] text-white"
               onClick={closeMenu}
-              onMouseEnter={() =>
+              onMouseEnter={() => {
+                if (!canHover()) return
                 animateCtaButton(
                   mobileMenuButtonRef.current,
                   mobileMenuButtonFillRef.current,
                   mobileMenuButtonTextRef.current,
                   true
                 )
-              }
-              onMouseLeave={() =>
+              }}
+              onMouseLeave={() => {
+                if (!canHover()) return
                 animateCtaButton(
                   mobileMenuButtonRef.current,
                   mobileMenuButtonFillRef.current,
                   mobileMenuButtonTextRef.current,
                   false
                 )
-              }
+              }}
             >
               <span ref={mobileMenuButtonFillRef} className="absolute inset-0 origin-left scale-x-0 bg-white" />
               <span ref={mobileMenuButtonTextRef} className="relative z-10">Let&apos;s talk</span>

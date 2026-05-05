@@ -28,7 +28,7 @@ export function MobileTestimonials({ items }: { items: Testimonial[] }) {
           </div>
         </div>
 
-        <div className="mt-7 flex justify-center gap-2" aria-label="Choose testimonial">
+        <div className="mt-7 flex justify-center gap-0.5" aria-label="Choose testimonial">
           {items.map((item, index) => (
             <button
               key={item.name}
@@ -36,10 +36,14 @@ export function MobileTestimonials({ items }: { items: Testimonial[] }) {
               onClick={() => setActiveIndex(index)}
               aria-label={`Show testimonial from ${item.name}`}
               aria-current={activeIndex === index}
-              className={`h-2.5 w-2.5 rounded-full transition-colors ${
-                activeIndex === index ? 'bg-black' : 'bg-black/20'
-              }`}
-            />
+              className="flex h-5 w-5 items-center justify-center rounded-full"
+            >
+              <span
+                className={`h-2.5 w-2.5 rounded-full transition-colors ${
+                  activeIndex === index ? 'bg-black' : 'bg-black/20'
+                }`}
+              />
+            </button>
           ))}
         </div>
       </div>

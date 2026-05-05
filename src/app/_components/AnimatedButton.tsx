@@ -56,17 +56,19 @@ export function AnimatedButton({
     })
   }
 
+  const canHover = () => window.matchMedia('(hover: hover) and (pointer: fine)').matches
+
   return (
     <button
       ref={buttonRef}
       type={type}
       className={`relative overflow-hidden ${className}`}
       onMouseEnter={(event) => {
-        animate(true)
+        if (canHover()) animate(true)
         onMouseEnter?.(event)
       }}
       onMouseLeave={(event) => {
-        animate(false)
+        if (canHover()) animate(false)
         onMouseLeave?.(event)
       }}
       {...props}

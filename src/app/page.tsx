@@ -1,9 +1,16 @@
 import { sanityFetch } from '@/sanity/lib/live'
 import { urlFor } from '@/sanity/lib/image'
+import { AboutPortraitReveal } from './_components/AboutPortraitReveal'
 import { AnimatedButton } from './_components/AnimatedButton'
+import { CameraPhotoBreak } from './_components/CameraPhotoBreak'
+import { DesktopTestimonials } from './_components/DesktopTestimonials'
 import { HeaderNav } from './_components/HeaderNav'
+import { Hero } from './_components/Hero'
 import { MobileNewsSlider } from './_components/MobileNewsSlider'
 import { MobileTestimonials } from './_components/MobileTestimonials'
+import { ScrollLeftShift } from './_components/ScrollLeftShift'
+import { ScrubTextReveal } from './_components/ScrubTextReveal'
+import { ServiceItem } from './_components/ServiceItem'
 import type { SanityImageSource } from '@sanity/image-url'
 
 const SERVICES = [
@@ -58,28 +65,32 @@ const TESTIMONIALS = [
     quote: 'A brilliant creative partner who transformed our vision into a unique, high-impact brand identity. Their ability to craft everything from custom mascots to polished logos is truly impressive.',
     logo: 'https://www.figma.com/api/mcp/asset/573c1093-66f1-40c7-bb4c-ca8bb31a0c4f',
     rotate: '-6.85deg',
-    pos: { left: '102px', top: '142px' },
+    pos: { left: 'clamp(148px, 12vw, 188px)', top: '142px' },
+    drift: { x: -132, y: -48 },
   },
   {
     name: 'Lukas Weber',
     quote: 'Professional, precise, and incredibly fast at handling complex product visualizations and templates.',
     logo: 'https://www.figma.com/api/mcp/asset/52e91228-25cb-45b1-8262-c68fbc73d3ba',
     rotate: '2.9deg',
-    pos: { left: '676px', top: '272px' },
+    pos: { left: 'clamp(600px, 58vw, 676px)', top: '272px' },
+    drift: { x: 84, y: -34 },
   },
   {
     name: 'Sarah Jenkins',
     quote: "A strategic partner who balances stunning aesthetics with high-performance UX for complex platforms. They don't just make things look good; they solve business problems through visual clarity.",
     logo: 'https://www.figma.com/api/mcp/asset/e23fa04f-5828-4414-9999-96b41651329e',
     rotate: '2.23deg',
-    pos: { left: '305px', top: '553px' },
+    pos: { left: '245px', top: '548px' },
+    drift: { x: -120, y: 52 },
   },
   {
     name: 'Sofia Martínez',
     quote: 'An incredibly versatile designer who delivers consistent quality across a wide range of styles and formats.',
     logo: 'https://www.figma.com/api/mcp/asset/2a70d83f-ea16-4ce8-b777-18d4f152db1e',
     rotate: '-4.15deg',
-    pos: { left: '987px', top: '546px' },
+    pos: { left: 'clamp(660px, 62vw, 840px)', top: '620px' },
+    drift: { x: 34, y: 42 },
   },
 ]
 
@@ -98,89 +109,10 @@ export default async function Home() {
 
   return (
     <>
-    <main className="bg-[#fafafa] flex-1">
+    <HeaderNav />
+    <main className="relative z-10 mb-[340px] flex-1 bg-[#fafafa] xl:mb-[520px]">
 
-      {/* ── Hero section ── */}
-      <section
-        className="relative overflow-hidden flex flex-col items-center
-          min-h-screen md:h-[847px]
-          px-4 md:px-8
-          pb-6 md:pb-0
-          justify-between md:justify-start md:gap-[145px]"
-        style={{ isolation: 'isolate' }}
-      >
-        {/* Background photo — always fills the section */}
-        <picture className="absolute inset-0 pointer-events-none" style={{ zIndex: -1 }}>
-          <img
-            src="/hero-bg.jpg"
-            alt=""
-            className="hero-bg-photo absolute inset-0 h-full w-full object-cover"
-          />
-        </picture>
-
-        {/* Bottom blur with gradient fade — no hard cut-off */}
-        <div
-          className="pointer-events-none absolute left-0 w-full backdrop-blur-[10px]"
-          style={{
-            bottom: 0,
-            height: '349px',
-            WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 50%)',
-            maskImage: 'linear-gradient(to bottom, transparent 0%, black 50%)',
-          }}
-        />
-
-        {/* ── Navbar ── */}
-        <HeaderNav />
-
-        {/* ── Hero text ── */}
-        {/*
-          No z-index on these containers — avoids creating a new stacking context
-          that would break mix-blend-mode. The image at z:-1 is behind everything
-          in the section's isolated compositing group.
-        */}
-        <div className="relative flex w-full flex-col items-center
-          justify-between gap-6
-          md:h-auto md:justify-start md:shrink-0">
-
-          {/* Name */}
-          <div className="flex w-full flex-col items-center md:items-start md:pb-[15px]">
-            <div className="flex w-full items-center justify-center md:justify-start md:px-[18px] md:mb-[-15px] mb-3">
-              <p className="font-mono text-[14px] uppercase leading-[1.1] text-white mix-blend-overlay whitespace-nowrap">
-                [ Hello i&apos;m ]
-              </p>
-            </div>
-            <h1
-              className="w-full text-center font-medium capitalize text-white mix-blend-overlay
-                text-[clamp(86px,24vw,112px)] md:text-[clamp(92px,13vw,118px)] lg:text-[clamp(124px,12vw,198px)]
-                tracking-[-0.07em] leading-[0.85] md:leading-[1.1] md:mb-[-15px]"
-            >
-              Harvey<br className="lg:hidden" /><span className="hidden lg:inline">&nbsp;&nbsp;&nbsp;</span>Specter
-            </h1>
-          </div>
-
-          {/* Description + CTA */}
-          <div className="flex w-full flex-col items-center md:items-end">
-            <div className="flex w-[293px] md:w-[294px] flex-col items-center md:items-start gap-[17px]">
-              <p
-                className="text-[14px] font-bold italic uppercase leading-[1.1] text-[#1f1f1f] text-center md:text-left"
-                style={{ letterSpacing: '-0.56px' }}
-              >
-                H.Studio is a{' '}
-                <span className="font-normal italic">full-service</span>
-                {' '}creative studio creating beautiful digital experiences and
-                products. We are an{' '}
-                <span className="font-normal italic">award winning</span>
-                {' '}design and art group specializing in branding, web design
-                and engineering.
-              </p>
-              <AnimatedButton className="rounded-full bg-black px-4 py-3 text-[14px] font-medium tracking-[-0.56px] text-white">
-                Let&apos;s talk
-              </AnimatedButton>
-            </div>
-          </div>
-        </div>
-
-      </section>
+      <Hero />
 
       {/* ── Kinetic bio section ── */}
       <section className="overflow-x-hidden px-4 md:px-8 py-12 md:py-[120px]">
@@ -195,7 +127,7 @@ export default async function Home() {
           </div>
 
           {/* Staggered lines */}
-          <div className="bio-lines flex flex-col gap-0 uppercase">
+          <ScrubTextReveal className="bio-lines flex flex-col gap-0 uppercase">
 
             {/* Line 1 — 001 label + A creative director / */}
             <div className="text-center md:text-left md:pl-0">
@@ -271,7 +203,7 @@ export default async function Home() {
               </div>
             </div>
 
-          </div>
+          </ScrubTextReveal>
         </div>
       </section>
 
@@ -285,19 +217,19 @@ export default async function Home() {
             <span className="font-mono text-[14px] text-[#1f1f1f] uppercase leading-[1.1]">[ About ]</span>
           </div>
           {/* Quote block with corner brackets */}
-          <QuoteBrackets>
-            <p className="text-[14px] font-normal leading-[1.3] text-[#1f1f1f]" style={{ letterSpacing: "-0.56px" }}>
-              Placeholder paragraph one. This is where you introduce yourself — your background,
-              your passion for your craft, and what drives you creatively. Two to three sentences
-              work best here. Placeholder paragraph two. Here you can describe your technical
-              approach, how you collaborate with clients, or what sets your work apart from others
-              in your field.
-            </p>
-          </QuoteBrackets>
+          <ScrollLeftShift desktopOnly>
+            <QuoteBrackets>
+              <p className="text-[14px] font-normal leading-[1.3] text-[#1f1f1f]" style={{ letterSpacing: "-0.56px" }}>
+                Placeholder paragraph one. This is where you introduce yourself — your background,
+                your passion for your craft, and what drives you creatively. Two to three sentences
+                work best here. Placeholder paragraph two. Here you can describe your technical
+                approach, how you collaborate with clients, or what sets your work apart from others
+                in your field.
+              </p>
+            </QuoteBrackets>
+          </ScrollLeftShift>
           {/* Portrait — full width */}
-          <div className="w-full rounded-[8px] overflow-hidden" style={{ aspectRatio: "343/483" }}>
-            <img src="/about-portrait.jpg" alt="Harvey Specter" className="w-full h-full object-cover" />
-          </div>
+          <AboutPortraitReveal className="w-full" style={{ aspectRatio: "343/483" }} />
         </div>
 
         {/* Desktop layout — two columns */}
@@ -313,23 +245,23 @@ export default async function Home() {
 
             {/* Quote block at bottom-left of content area */}
             <div className="min-w-0 self-end lg:flex-1 lg:max-w-[465px]">
-              <QuoteBrackets>
-                <p className="text-[14px] font-normal leading-[1.3] text-[#1f1f1f] py-3" style={{ letterSpacing: "-0.56px" }}>
-                  Placeholder paragraph one. This is where you introduce yourself — your background,
-                  your passion for your craft, and what drives you creatively. Two to three sentences
-                  work best here. Placeholder paragraph two. Here you can describe your technical
-                  approach, how you collaborate with clients, or what sets your work apart from others
-                  in your field.
-                </p>
-              </QuoteBrackets>
+              <ScrollLeftShift>
+                <QuoteBrackets>
+                  <p className="text-[14px] font-normal leading-[1.3] text-[#1f1f1f] py-3" style={{ letterSpacing: "-0.56px" }}>
+                    Placeholder paragraph one. This is where you introduce yourself — your background,
+                    your passion for your craft, and what drives you creatively. Two to three sentences
+                    work best here. Placeholder paragraph two. Here you can describe your technical
+                    approach, how you collaborate with clients, or what sets your work apart from others
+                    in your field.
+                  </p>
+                </QuoteBrackets>
+              </ScrollLeftShift>
             </div>
 
             {/* Portrait photo */}
             <div className="flex items-start gap-6 h-full min-w-0 lg:shrink-0">
               <span className="font-mono text-[14px] text-[#1f1f1f] leading-[1.1] shrink-0">002</span>
-              <div className="h-full w-full lg:w-[436px] rounded-[8px] overflow-hidden">
-                <img src="/about-portrait.jpg" alt="Harvey Specter" className="w-full h-full object-cover" />
-              </div>
+              <AboutPortraitReveal className="h-full w-full lg:w-[436px]" />
             </div>
 
           </div>
@@ -338,18 +270,13 @@ export default async function Home() {
       </section>
 
       {/* ── Photo break section ── */}
-      <section className="w-full h-screen overflow-hidden">
-        <img
-          src="/camera-photo.jpg"
-          alt=""
-          className="w-full h-full object-cover object-center"
-        />
-      </section>
+      <CameraPhotoBreak />
 
       {/* ── Services / Deliverables section ── */}
       <section
         className="bg-black px-4 md:px-8 py-12 md:py-20 flex flex-col gap-8 md:gap-12"
         id="services"
+        data-nav-theme="light"
       >
         {/* Section label */}
         <p className="font-mono text-[14px] text-white uppercase leading-[1.1]">
@@ -365,38 +292,7 @@ export default async function Home() {
         {/* Service list */}
         <div className="flex flex-col gap-12 w-full">
           {SERVICES.map((service) => (
-            <div key={service.number} className="flex flex-col gap-2">
-              {/* Number + horizontal rule */}
-              <p className="font-mono text-[14px] text-white uppercase leading-[1.1]">
-                [ {service.number} ]
-              </p>
-              <div className="w-full h-px bg-white/30" />
-
-              {/* Desktop: name left | description + image right; Mobile: stacked */}
-              <div className="flex flex-col md:flex-row md:flex-wrap md:justify-between md:items-start gap-4 pt-2">
-                <h3
-                  className="font-bold italic text-white uppercase leading-[1.1] text-[36px] md:shrink-0"
-                  style={{ letterSpacing: '-1.44px' }}
-                >
-                  {service.title}
-                </h3>
-                <div className="flex flex-col md:flex-row gap-4 md:gap-6 md:items-start">
-                  <p
-                    className="text-white text-[14px] leading-[1.3] md:w-[393px]"
-                    style={{ letterSpacing: '-0.56px' }}
-                  >
-                    {service.description}
-                  </p>
-                  <div className="w-[151px] h-[151px] shrink-0 overflow-hidden">
-                    <img
-                      src={service.image}
-                      alt={service.title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
+            <ServiceItem key={service.number} {...service} />
           ))}
         </div>
       </section>
@@ -494,47 +390,20 @@ export default async function Home() {
 
       {/* ── Testimonials section ── */}
       <section className="overflow-hidden" id="testimonials">
-
-        {/* Desktop: floating scattered cards + big heading */}
-        <div className="hidden md:flex relative flex-col items-center justify-center min-h-[987px] py-[120px] origin-top scale-[0.78] lg:scale-[0.88] xl:scale-100">
-          {TESTIMONIALS.map((t) => (
-            <div
-              key={t.name}
-              className="absolute"
-              style={{
-                left: t.pos.left,
-                top: t.pos.top,
-                // Lukas Weber (upper-right) sits behind the heading; the other three float above it
-                zIndex: t.name === 'Lukas Weber' ? 5 : 20,
-              }}
-            >
-              <div style={{ transform: `rotate(${t.rotate})` }}>
-                <TestimonialCard name={t.name} quote={t.quote} logo={t.logo} className="w-[353px]" />
-              </div>
-            </div>
-          ))}
-          {/* z-10 — above Lukas (z-5) but below Marko/Sarah/Sofia (z-20) */}
-          <p
-            className="relative z-10 font-medium text-black text-center capitalize leading-[1.1]"
-            style={{ fontSize: 'clamp(122px, 13.7vw, 198px)', letterSpacing: 'clamp(-8.54px, -0.95vw, -13.86px)' }}
-          >
-            Testimonials
-          </p>
-        </div>
-
+        <DesktopTestimonials items={TESTIMONIALS} />
         <MobileTestimonials items={TESTIMONIALS} />
 
       </section>
 
       {/* ── News & Achievements section ── */}
-      <section className="bg-[#f3f3f3] py-16 md:py-[120px]" id="news">
+      <section className="overflow-hidden bg-[#f3f3f3] py-10 md:py-[120px]" id="news">
 
         <MobileNewsSlider items={NEWS_ITEMS} />
 
         {/* Desktop: rotated title + horizontal-scroll slider */}
         <div className="hidden md:flex items-stretch overflow-hidden">
           {/* Rotated title — fixed left column */}
-          <div className="flex h-[706px] w-[110px] items-center justify-center shrink-0 ml-8">
+          <div className="flex h-[706px] w-[150px] items-center justify-center shrink-0 ml-8 mr-10">
             <h2
               className="font-light uppercase text-black"
               style={{
@@ -556,7 +425,7 @@ export default async function Home() {
             className="flex-1 overflow-x-auto"
             style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}
           >
-            <div className="flex items-start h-[706px] pl-[200px] pr-16">
+            <div className="flex items-start h-[706px] pl-[80px] pr-16">
               {NEWS_ITEMS.flatMap((item, i) => {
                 const card = (
                   <div
@@ -591,7 +460,7 @@ export default async function Home() {
     </main>
 
     {/* ── Footer ── */}
-    <footer className="bg-black pt-12 overflow-hidden">
+    <footer className="fixed inset-x-0 bottom-0 z-0 h-[340px] overflow-hidden bg-black pt-12 xl:h-[520px]">
 
       {/* Mobile footer */}
       <div className="xl:hidden flex flex-col gap-12 px-4">
@@ -696,36 +565,6 @@ export default async function Home() {
   )
 }
 
-function TestimonialCard({
-  name,
-  quote,
-  logo,
-  className = '',
-}: {
-  name: string
-  quote: string
-  logo: string
-  className?: string
-}) {
-  return (
-    <div className={`bg-[#f1f1f1] border border-[#ddd] flex flex-col gap-4 p-6 rounded-[4px] ${className}`}>
-      {/* self-start prevents flex-col from stretching the img to full card width */}
-      <img
-        src={logo}
-        alt=""
-        className="self-start block"
-        style={{ height: '28px', width: 'auto', maxWidth: '144px', objectFit: 'contain' }}
-      />
-      <p className="text-[#1f1f1f] text-[18px] leading-[1.3]" style={{ letterSpacing: '-0.72px' }}>
-        {quote}
-      </p>
-      <p className="font-black text-black text-[16px] uppercase leading-[1.1]" style={{ letterSpacing: '-0.64px' }}>
-        {name}
-      </p>
-    </div>
-  )
-}
-
 function ProjectCard({
   title,
   imageUrl,
@@ -738,27 +577,36 @@ function ProjectCard({
   height: number
 }) {
   return (
-    <div className="flex flex-col gap-[10px]">
-      <div className="relative w-full overflow-hidden bg-[#1f1f1f]" style={{ height }}>
+    <div className="project-card group relative flex flex-col gap-[10px]">
+      <div className="project-card-media relative w-full overflow-hidden bg-[#1f1f1f]" style={{ height }}>
         {imageUrl && (
-          <img src={imageUrl} alt={title} className="absolute inset-0 w-full h-full object-cover" />
+          <img src={imageUrl} alt={title} className="project-card-image absolute inset-0 w-full h-full object-cover" />
         )}
-        <div className="absolute bottom-4 left-4 flex gap-3">
+        <div className="project-card-sweep absolute inset-0" aria-hidden="true" />
+      </div>
+      {tags.length > 0 && (
+        <div
+          className="project-card-tags pointer-events-none absolute left-4 z-10 flex max-w-[calc(100%-32px)] flex-wrap gap-3"
+          style={{ top: height - 48 }}
+        >
           {tags.map((tag) => (
             <span
               key={tag}
-              className="backdrop-blur-[10px] bg-white/30 px-2 py-1 rounded-full text-[14px] font-medium text-[#111] tracking-[-0.56px] whitespace-nowrap"
+              className="whitespace-nowrap rounded-full bg-white/55 px-3 py-1 text-[14px] font-medium leading-[1.1] text-[#111] backdrop-blur-[10px]"
+              style={{ letterSpacing: '-0.56px' }}
             >
               {tag}
             </span>
           ))}
         </div>
-      </div>
+      )}
       <div className="flex items-center justify-between">
-        <p className="font-black text-black uppercase leading-[1.1] text-[24px] md:text-[36px] tracking-[-0.96px] md:tracking-[-1.44px]">
+        <p
+          className="project-card-title font-black text-black uppercase leading-[1.1] text-[24px] md:text-[36px] tracking-[-0.96px] md:tracking-[-1.44px]"
+        >
           {title}
         </p>
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" className="shrink-0">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" className="project-card-arrow shrink-0">
           <path d="M8 24L24 8M24 8H13M24 8V19" stroke="#1f1f1f" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </div>

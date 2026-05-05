@@ -18,12 +18,105 @@ body {
   font-family: var(--font-inter), Arial, Helvetica, sans-serif;
 }
 
+.project-card-media {
+  isolation: isolate;
+  transform-origin: center;
+  transition: transform 650ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 650ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.project-card-image {
+  top: 0;
+  bottom: auto;
+  height: calc(100% + var(--project-card-image-bottom-crop, 84px));
+  transform: scale(1);
+  transform-origin: top center;
+  transition: transform 850ms cubic-bezier(0.16, 1, 0.3, 1), filter 850ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.project-card-sweep {
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      112deg,
+      transparent 0%,
+      transparent 38%,
+      rgba(255, 255, 255, 0.18) 47%,
+      rgba(255, 255, 255, 0.42) 50%,
+      rgba(255, 255, 255, 0.12) 54%,
+      transparent 64%,
+      transparent 100%
+    );
+  mix-blend-mode: screen;
+  opacity: 0;
+  transform: translateX(-120%) skewX(-8deg);
+  transition: opacity 250ms ease, transform 900ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.project-card-title {
+  position: relative;
+  display: inline-block;
+  width: fit-content;
+  transform: translateY(0);
+  transition: transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.project-card-title::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -5px;
+  width: 100%;
+  height: 2px;
+  background: #1f1f1f;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.project-card-arrow {
+  transition: transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .project-card:hover .project-card-media {
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.16);
+    transform: translateY(-8px);
+  }
+
+  .project-card:hover .project-card-image {
+    filter: saturate(1.08) contrast(1.06);
+    transform: scale(1.075) rotate(0.7deg);
+  }
+
+  .project-card:hover .project-card-sweep {
+    opacity: 1;
+    transform: translateX(120%) skewX(-8deg);
+  }
+
+  .project-card:hover .project-card-title::before {
+    transform: scaleX(1);
+  }
+
+  .project-card:hover .project-card-title {
+    transform: translateY(-5px);
+  }
+
+  .project-card:hover .project-card-arrow {
+    transform: translate(5px, -5px) rotate(6deg);
+  }
+}
+
 .hero-bg-photo {
+  --hero-bg-scale: 1.25;
+  --hero-bg-translate-y: 132px;
   top: -132px;
   height: calc(100% + 132px);
   object-position: center 10%;
-  transform: translateY(132px) scale(1.25);
+  transform: translateY(var(--hero-bg-translate-y)) scale(var(--hero-bg-scale));
   transform-origin: top center;
+  will-change: transform;
 }
 
 .bio-line {
@@ -47,9 +140,10 @@ body {
 
 @media (min-width: 768px) {
   .hero-bg-photo {
+    --hero-bg-scale: 1.08;
+    --hero-bg-translate-y: 0px;
     top: 0;
     height: 100%;
     object-position: calc(50% + 72px) 0;
-    transform: scale(1.08);
   }
 }
