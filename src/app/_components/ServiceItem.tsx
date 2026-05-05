@@ -56,7 +56,7 @@ export function ServiceItem({ number, title, description, image }: ServiceItemPr
     })
   }
 
-  const canHover = () => window.matchMedia('(hover: hover) and (pointer: fine)').matches
+  const canHover = () => window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 1024px)').matches
 
   return (
     <div
@@ -66,7 +66,13 @@ export function ServiceItem({ number, title, description, image }: ServiceItemPr
         if (canHover()) animate(true)
       }}
       onMouseLeave={() => {
-        if (canHover()) animate(false)
+        if (canHover()) {
+          animate(false)
+        } else {
+          gsap.set([titleRef.current, descriptionRef.current, rootRef.current], { x: 0, y: 0 })
+          gsap.set(imageRef.current, { scale: 1, rotate: 0, filter: 'grayscale(100%) contrast(1)' })
+          gsap.set(dividerRef.current, { opacity: 0.3, scaleX: 1 })
+        }
       }}
     >
       <p className="font-mono text-[14px] text-white uppercase leading-[1.1]">
@@ -77,7 +83,7 @@ export function ServiceItem({ number, title, description, image }: ServiceItemPr
       <div className="grid gap-4 pt-2 xl:grid-cols-[minmax(360px,1fr)_minmax(568px,auto)] xl:items-start">
         <h3
           ref={titleRef}
-          className="min-w-0 font-bold italic text-white uppercase leading-[1.1] text-[36px] md:text-[48px] xl:text-[36px] will-change-transform"
+          className="min-w-0 font-bold italic text-white uppercase leading-[1.1] text-[36px] md:text-[48px] xl:text-[36px] lg:will-change-transform"
           style={{ letterSpacing: '-1.44px' }}
         >
           {title}
@@ -85,7 +91,7 @@ export function ServiceItem({ number, title, description, image }: ServiceItemPr
         <div className="grid min-w-0 gap-4 sm:grid-cols-[minmax(0,393px)_151px] sm:items-start xl:gap-6">
           <p
             ref={descriptionRef}
-            className="min-w-0 text-white text-[14px] leading-[1.3] opacity-[0.78] will-change-transform"
+            className="min-w-0 text-white text-[14px] leading-[1.3] opacity-[0.78] lg:will-change-transform"
             style={{ letterSpacing: '-0.56px' }}
           >
             {description}

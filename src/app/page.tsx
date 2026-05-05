@@ -110,7 +110,7 @@ export default async function Home() {
   return (
     <>
     <HeaderNav />
-    <main className="relative z-10 mb-[340px] flex-1 bg-[#fafafa] xl:mb-[520px]">
+    <main className="relative z-10 mb-[500px] flex-1 bg-[#fafafa] xl:mb-[520px]">
 
       <Hero />
 
@@ -460,7 +460,7 @@ export default async function Home() {
     </main>
 
     {/* ── Footer ── */}
-    <footer className="fixed inset-x-0 bottom-0 z-0 h-[340px] overflow-hidden bg-black pt-12 xl:h-[520px]">
+    <footer className="fixed inset-x-0 bottom-0 z-0 h-[500px] overflow-hidden bg-black pt-12 xl:h-[520px]">
 
       {/* Mobile footer */}
       <div className="xl:hidden flex flex-col gap-12 px-4">
