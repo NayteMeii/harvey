@@ -11,53 +11,9 @@ import { MobileTestimonials } from './_components/MobileTestimonials'
 import { ScrollLeftShift } from './_components/ScrollLeftShift'
 import { ScrubTextReveal } from './_components/ScrubTextReveal'
 import { ServiceItem } from './_components/ServiceItem'
+import { NEWS_QUERY, resolveNews, type NewsDocData } from './_data/news'
+import { resolveServices, SERVICES_QUERY, type ServiceDocData } from './_data/services'
 import type { SanityImageSource } from '@sanity/image-url'
-
-const SERVICES = [
-  {
-    number: '1',
-    title: 'Brand Discovery',
-    description:
-      'Placeholder description of this service. Explain the value you provide and the outcomes clients can expect. Keep it to two or three sentences.',
-    image: 'https://www.figma.com/api/mcp/asset/8a76528a-46ef-43cf-bccb-e24e13b1a026',
-  },
-  {
-    number: '2',
-    title: 'Web Design & Dev',
-    description:
-      'Placeholder description of this service. Explain the value you provide and the outcomes clients can expect. Keep it to two or three sentences.',
-    image: 'https://www.figma.com/api/mcp/asset/7b569c09-7e90-4a51-9bfc-9b47b0ede0fe',
-  },
-  {
-    number: '3',
-    title: 'Marketing',
-    description:
-      'Placeholder description of this service. Explain the value you provide and the outcomes clients can expect. Keep it to two or three sentences.',
-    image: 'https://www.figma.com/api/mcp/asset/3a3eeb5c-5af8-449e-84bf-20e1013d9b77',
-  },
-  {
-    number: '4',
-    title: 'Photography',
-    description:
-      'Placeholder description of this service. Explain the value you provide and the outcomes clients can expect. Keep it to two or three sentences.',
-    image: 'https://www.figma.com/api/mcp/asset/45eb3295-a439-4150-b936-b68c5ae8c8d2',
-  },
-]
-
-const NEWS_ITEMS = [
-  {
-    image: 'https://www.figma.com/api/mcp/asset/137b7e85-9b18-456f-8748-0dee5f88c783',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-  },
-  {
-    image: 'https://www.figma.com/api/mcp/asset/0efa4f7b-a5f0-4228-a524-c4db6ae1b760',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-  },
-  {
-    image: 'https://www.figma.com/api/mcp/asset/908ef34f-64db-41d0-8a9e-68b29d32d913',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-  },
-]
 
 const TESTIMONIALS = [
   {
@@ -104,8 +60,18 @@ type PortfolioDoc = {
 const PORTFOLIO_QUERY = `*[_type == "portfolio"] | order(order asc) { _id, title, image, tags }`
 
 export default async function Home() {
-  const { data } = await sanityFetch({ query: PORTFOLIO_QUERY })
-  const projects = (data ?? []) as PortfolioDoc[]
+  const [{ data: portfolioData }, { data: serviceData }, { data: newsData }] = await Promise.all([
+    sanityFetch({ query: PORTFOLIO_QUERY }),
+    sanityFetch({ query: SERVICES_QUERY }),
+    sanityFetch({ query: NEWS_QUERY }),
+  ])
+  const projects = (portfolioData ?? []) as PortfolioDoc[]
+  const services = resolveServices(serviceData as ServiceDocData<SanityImageSource>[] | null, (image) =>
+    urlFor(image).width(320).height(320).url()
+  )
+  const newsItems = resolveNews(newsData as NewsDocData<SanityImageSource>[] | null, (image) =>
+    urlFor(image).width(800).url()
+  )
 
   return (
     <>
@@ -291,7 +257,7 @@ export default async function Home() {
 
         {/* Service list */}
         <div className="flex flex-col gap-12 w-full">
-          {SERVICES.map((service) => (
+          {services.map((service) => (
             <ServiceItem key={service.number} {...service} />
           ))}
         </div>
@@ -398,7 +364,7 @@ export default async function Home() {
       {/* ── News & Achievements section ── */}
       <section className="overflow-hidden bg-[#f3f3f3] py-10 md:py-[120px]" id="news">
 
-        <MobileNewsSlider items={NEWS_ITEMS} />
+        <MobileNewsSlider items={newsItems} />
 
         {/* Desktop: rotated title + horizontal-scroll slider */}
         <div className="hidden md:flex items-stretch overflow-hidden">
@@ -426,7 +392,15 @@ export default async function Home() {
             style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}
           >
             <div className="flex items-start h-[706px] pl-[80px] pr-16">
-              {NEWS_ITEMS.flatMap((item, i) => {
+              {newsItems.flatMap((item, i) => {
+                const readMore = (
+                  <>
+                    <span className="font-medium text-[14px] text-black" style={{ letterSpacing: '-0.56px' }}>Read more</span>
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                      <path d="M4 14L14 4M14 4H7M14 4V11" stroke="black" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </>
+                )
                 const card = (
                   <div
                     key={i}
@@ -434,17 +408,25 @@ export default async function Home() {
                     style={{ paddingTop: i === 1 ? '120px' : '0' }}
                   >
                     <div className="w-full overflow-hidden" style={{ height: '469px' }}>
-                      <img src={item.image} alt="" className="w-full h-full object-cover" />
+                      <img src={item.image} alt={item.title ?? ''} className="w-full h-full object-cover" />
                     </div>
                     <p className="text-[#1f1f1f] text-[14px] leading-[1.3]" style={{ letterSpacing: '-0.56px' }}>
                       {item.text}
                     </p>
-                    <div className="flex items-center gap-[10px] border-b border-black pb-1 w-fit">
-                      <span className="font-medium text-[14px] text-black" style={{ letterSpacing: '-0.56px' }}>Read more</span>
-                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                        <path d="M4 14L14 4M14 4H7M14 4V11" stroke="black" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </div>
+                    {item.link ? (
+                      <a
+                        href={item.link}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center gap-[10px] border-b border-black pb-1 w-fit"
+                      >
+                        {readMore}
+                      </a>
+                    ) : (
+                      <div className="flex items-center gap-[10px] border-b border-black pb-1 w-fit">
+                        {readMore}
+                      </div>
+                    )}
                   </div>
                 )
                 return i === 0
@@ -470,7 +452,7 @@ export default async function Home() {
             <p className="font-light italic uppercase text-white text-[24px]" style={{ letterSpacing: '-0.96px', lineHeight: '1.1' }}>
               Have a <strong className="font-black not-italic">project</strong> in mind?
             </p>
-            <AnimatedButton className="w-fit rounded-full border border-white px-4 py-3 text-[14px] font-medium tracking-[-0.56px] text-white">
+            <AnimatedButton href="/lets-talk" className="w-fit rounded-full border border-white px-4 py-3 text-[14px] font-medium tracking-[-0.56px] text-white">
               Let&apos;s talk
             </AnimatedButton>
           </div>
@@ -507,7 +489,7 @@ export default async function Home() {
               <p className="font-light italic uppercase text-white text-[24px]" style={{ letterSpacing: '-0.96px', lineHeight: '1.1' }}>
                 Have a <strong className="font-black not-italic">project</strong> in mind?
               </p>
-              <AnimatedButton className="w-fit rounded-full border border-white px-4 py-3 text-[14px] font-medium tracking-[-0.56px] text-white">
+              <AnimatedButton href="/lets-talk" className="w-fit rounded-full border border-white px-4 py-3 text-[14px] font-medium tracking-[-0.56px] text-white">
                 Let&apos;s talk
               </AnimatedButton>
             </div>
@@ -621,7 +603,7 @@ function PortfolioCTA() {
         <p className="text-[14px] italic leading-[1.3] text-[#1f1f1f]" style={{ letterSpacing: '-0.56px' }}>
           Discover how my creativity transforms ideas into impactful digital experiences — schedule a call with me to get started.
         </p>
-        <AnimatedButton className="self-start rounded-full bg-black px-4 py-3 text-[14px] font-medium tracking-[-0.56px] text-white">
+        <AnimatedButton href="/lets-talk" className="self-start rounded-full bg-black px-4 py-3 text-[14px] font-medium tracking-[-0.56px] text-white">
           Let&apos;s talk
         </AnimatedButton>
       </div>

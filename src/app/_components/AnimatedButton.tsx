@@ -1,16 +1,25 @@
 'use client'
 
 import gsap from 'gsap'
-import type { ButtonHTMLAttributes, ReactNode } from 'react'
+import Link from 'next/link'
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'react'
 import { useRef } from 'react'
 
-type AnimatedButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+type SharedProps = {
   children: ReactNode
+  className?: string
   fillClassName?: string
   textClassName?: string
   hoverTextColor?: string
   idleTextColor?: string
 }
+
+type ButtonOnly = Omit<ButtonHTMLAttributes<HTMLButtonElement>, keyof SharedProps>
+type AnchorOnly = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof SharedProps | 'href'>
+
+type AnimatedButtonProps =
+  | (SharedProps & ButtonOnly & { href?: undefined })
+  | (SharedProps & AnchorOnly & { href: string })
 
 export function AnimatedButton({
   children,
@@ -21,21 +30,21 @@ export function AnimatedButton({
   idleTextColor = '#ffffff',
   onMouseEnter,
   onMouseLeave,
-  type = 'button',
+  href,
   ...props
 }: AnimatedButtonProps) {
-  const buttonRef = useRef<HTMLButtonElement>(null)
+  const elementRef = useRef<HTMLButtonElement | HTMLAnchorElement>(null)
   const fillRef = useRef<HTMLSpanElement>(null)
   const textRef = useRef<HTMLSpanElement>(null)
 
   const animate = (hovered: boolean) => {
-    const button = buttonRef.current
+    const element = elementRef.current
     const fill = fillRef.current
     const text = textRef.current
 
-    if (!button || !fill || !text) return
+    if (!element || !fill || !text) return
 
-    gsap.to(button, {
+    gsap.to(element, {
       y: hovered ? -2 : 0,
       rotate: hovered ? -1.2 : 0,
       scale: hovered ? 1.03 : 1,
@@ -58,25 +67,51 @@ export function AnimatedButton({
 
   const canHover = () => window.matchMedia('(hover: hover) and (pointer: fine)').matches
 
-  return (
-    <button
-      ref={buttonRef}
-      type={type}
-      className={`relative overflow-hidden ${className}`}
-      onMouseEnter={(event) => {
-        if (canHover()) animate(true)
-        onMouseEnter?.(event)
-      }}
-      onMouseLeave={(event) => {
-        if (canHover()) animate(false)
-        onMouseLeave?.(event)
-      }}
-      {...props}
-    >
+  const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
+    if (canHover()) animate(true)
+    ;(onMouseEnter as ((e: React.MouseEvent<HTMLElement>) => void) | undefined)?.(event)
+  }
+  const handleMouseLeave = (event: React.MouseEvent<HTMLElement>) => {
+    if (canHover()) animate(false)
+    ;(onMouseLeave as ((e: React.MouseEvent<HTMLElement>) => void) | undefined)?.(event)
+  }
+
+  const inner = (
+    <>
       <span ref={fillRef} className={`absolute inset-0 origin-left scale-x-0 ${fillClassName}`} />
       <span ref={textRef} className={`relative z-10 ${textClassName}`}>
         {children}
       </span>
+    </>
+  )
+
+  if (href) {
+    const anchorProps = props as AnchorOnly
+    return (
+      <Link
+        ref={elementRef as React.Ref<HTMLAnchorElement>}
+        href={href}
+        className={`relative inline-block overflow-hidden ${className}`}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        {...anchorProps}
+      >
+        {inner}
+      </Link>
+    )
+  }
+
+  const buttonProps = props as ButtonOnly
+  return (
+    <button
+      ref={elementRef as React.Ref<HTMLButtonElement>}
+      type={buttonProps.type ?? 'button'}
+      className={`relative overflow-hidden ${className}`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      {...buttonProps}
+    >
+      {inner}
     </button>
   )
 }

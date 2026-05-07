@@ -1,9 +1,16 @@
 'use client'
 
 import gsap from 'gsap'
+import Link from 'next/link'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
-const NAV_LINKS = ['About', 'Services', 'Projects', 'News', 'Contact']
+const NAV_LINKS = [
+  { label: 'About', href: '/about' },
+  { label: 'Services', href: '/services' },
+  { label: 'Projects', href: '/projects' },
+  { label: 'News', href: '/news' },
+  { label: 'Contact', href: '/contact' },
+]
 
 export function HeaderNav() {
   const [open, setOpen] = useState(false)
@@ -17,10 +24,10 @@ export function HeaderNav() {
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const desktopLinkRefs = useRef<(HTMLAnchorElement | null)[]>([])
   const desktopUnderlineRefs = useRef<(HTMLSpanElement | null)[]>([])
-  const desktopButtonRef = useRef<HTMLButtonElement>(null)
+  const desktopButtonRef = useRef<HTMLAnchorElement>(null)
   const desktopButtonFillRef = useRef<HTMLSpanElement>(null)
   const desktopButtonTextRef = useRef<HTMLSpanElement>(null)
-  const mobileMenuButtonRef = useRef<HTMLButtonElement>(null)
+  const mobileMenuButtonRef = useRef<HTMLAnchorElement>(null)
   const mobileMenuButtonFillRef = useRef<HTMLSpanElement>(null)
   const mobileMenuButtonTextRef = useRef<HTMLSpanElement>(null)
   const mobileButtonLineRefs = useRef<(HTMLSpanElement | null)[]>([])
@@ -160,7 +167,7 @@ export function HeaderNav() {
   }
 
   const animateCtaButton = (
-    button: HTMLButtonElement | null,
+    button: HTMLElement | null,
     fill: HTMLSpanElement | null,
     text: HTMLSpanElement | null,
     hovered: boolean,
@@ -230,7 +237,9 @@ export function HeaderNav() {
       className={`fixed inset-x-0 top-0 z-[100] px-4 transition-colors duration-300 md:px-8 ${navColorClass}`}
     >
       <div className="relative z-20 flex w-full items-center justify-between py-6 xl:hidden">
-        <span className="text-[16px] font-semibold tracking-[-0.64px]">H.Studio</span>
+        <Link href="/" className="text-[16px] font-semibold tracking-[-0.64px]">
+          H.Studio
+        </Link>
 
         <button
           ref={mobileButtonRef}
@@ -269,13 +278,15 @@ export function HeaderNav() {
       </div>
 
       <div className="hidden w-full items-center justify-between py-2 xl:flex">
-        <span className="text-[16px] font-semibold tracking-[-0.64px]">H.Studio</span>
+        <Link href="/" className="text-[16px] font-semibold tracking-[-0.64px]">
+          H.Studio
+        </Link>
 
         <div className="flex items-center gap-14 text-[16px] font-semibold tracking-[-0.64px] capitalize">
           {NAV_LINKS.map((item, index) => (
             <a
-              key={item}
-              href={`#${item.toLowerCase()}`}
+              key={item.label}
+              href={item.href}
               ref={(node) => {
                 desktopLinkRefs.current[index] = node
               }}
@@ -287,7 +298,7 @@ export function HeaderNav() {
                 if (canHover()) animateDesktopLink(index, false)
               }}
             >
-              <span>{item}</span>
+              <span>{item.label}</span>
               <span
                 ref={(node) => {
                   desktopUnderlineRefs.current[index] = node
@@ -299,9 +310,10 @@ export function HeaderNav() {
           ))}
         </div>
 
-        <button
+        <Link
           ref={desktopButtonRef}
-          className={`relative overflow-hidden rounded-full px-4 py-3 text-[14px] font-medium tracking-[-0.56px] shadow-none transition-colors duration-300 ${desktopButtonClass}`}
+          href="/lets-talk"
+          className={`relative inline-block overflow-hidden rounded-full px-4 py-3 text-[14px] font-medium tracking-[-0.56px] shadow-none transition-colors duration-300 ${desktopButtonClass}`}
           onMouseEnter={() => {
             if (canHover()) animateDesktopButton(true)
           }}
@@ -311,7 +323,7 @@ export function HeaderNav() {
         >
           <span ref={desktopButtonFillRef} className={`absolute inset-0 origin-left scale-x-0 ${desktopButtonFillClass}`} />
           <span ref={desktopButtonTextRef} className="relative z-10">Let&apos;s talk</span>
-        </button>
+        </Link>
       </div>
 
       {mounted && (
@@ -322,7 +334,9 @@ export function HeaderNav() {
         >
           <div ref={panelRef} className="relative z-[120] flex h-full w-full flex-col bg-[#fafafa] px-6 py-6" onClick={(event) => event.stopPropagation()}>
             <div className="flex items-center justify-between">
-              <span className="text-[16px] font-semibold tracking-[-0.64px] text-black">H.Studio</span>
+              <Link href="/" onClick={closeMenu} className="text-[16px] font-semibold tracking-[-0.64px] text-black">
+                H.Studio
+              </Link>
               <button
                 ref={closeButtonRef}
                 onClick={closeMenu}
@@ -338,22 +352,23 @@ export function HeaderNav() {
             <nav className="mt-12 flex flex-col border-t border-[#e5e5e5]">
               {NAV_LINKS.map((item, index) => (
                 <a
-                  key={item}
-                  href={`#${item.toLowerCase()}`}
+                  key={item.label}
+                  href={item.href}
                   ref={(node) => {
                     mobileLinkRefs.current[index] = node
                   }}
                   onClick={closeMenu}
                   className="border-b border-[#e5e5e5] py-4 text-[38px] font-light capitalize tracking-[-1.5px] text-black"
                 >
-                  {item}
+                  {item.label}
                 </a>
               ))}
             </nav>
 
-            <button
+            <Link
               ref={mobileMenuButtonRef}
-              className="relative mt-auto self-start overflow-hidden rounded-full bg-black px-6 py-3 text-[14px] font-medium tracking-[-0.56px] text-white"
+              href="/lets-talk"
+              className="relative mt-auto inline-block self-start overflow-hidden rounded-full bg-black px-6 py-3 text-[14px] font-medium tracking-[-0.56px] text-white"
               onClick={closeMenu}
               onMouseEnter={() => {
                 if (!canHover()) return
@@ -376,7 +391,7 @@ export function HeaderNav() {
             >
               <span ref={mobileMenuButtonFillRef} className="absolute inset-0 origin-left scale-x-0 bg-white" />
               <span ref={mobileMenuButtonTextRef} className="relative z-10">Let&apos;s talk</span>
-            </button>
+            </Link>
           </div>
         </div>
       )}

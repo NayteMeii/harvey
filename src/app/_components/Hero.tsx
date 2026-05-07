@@ -144,7 +144,7 @@ export function Hero() {
               digital experiences and products. We are an <span className="font-normal italic">award winning</span>{' '}
               design and art group specializing in branding, web design and engineering.
             </p>
-            <AnimatedButton className="rounded-full bg-black px-4 py-3 text-[14px] font-medium tracking-[-0.56px] text-white">
+            <AnimatedButton href="/lets-talk" className="rounded-full bg-black px-4 py-3 text-[14px] font-medium tracking-[-0.56px] text-white">
               Let&apos;s talk
             </AnimatedButton>
           </div>
